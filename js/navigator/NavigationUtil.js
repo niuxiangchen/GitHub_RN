@@ -1,7 +1,18 @@
 import React, {Component} from 'react';
-import {View} from 'react-native';
 
 class NavigationUtil extends Component {
+  /**
+   *跳转到指定页面
+   */
+  static goPage(params, page) {
+    const navigation = NavigationUtil.navigation;
+    if (!navigation) {
+      console.log('NavigationUtil.navigation can not be null');
+    }
+    navigation.navigate(page, {
+      ...params,
+    });
+  }
   /**
    * 重置到首页
    * @param params

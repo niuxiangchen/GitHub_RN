@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
+import actions from '../actions';
+import {connect} from 'react-redux';
 
 class MyPage extends Component {
   render() {
@@ -24,4 +26,7 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 });
-export default MyPage;
+const mapDispatchToProps = dispatch => ({
+  onThemeChange: theme => dispatch(actions.onThemeChange(theme)),
+});
+export default connect(null, mapDispatchToProps)(MyPage);
