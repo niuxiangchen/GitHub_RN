@@ -2,11 +2,10 @@ import React, {Component} from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-export default class PopularItem extends Component {
+export default class TrendingItem extends Component {
   render() {
     const {item} = this.props;
-    //如果item为空或者没有作者信息
-    if (!item || !item.owner) return null;
+    if (!item) return null;
     let favoriteButton = (
       <TouchableOpacity style={{padding: 6}} onPress={() => {}}>
         <FontAwesome name={'star-o'} size={26} style={{color: 'red'}} />
@@ -15,20 +14,25 @@ export default class PopularItem extends Component {
     return (
       <TouchableOpacity onPress={() => this.props.onSelect}>
         <View style={styles.cell_container}>
-          <Text style={styles.title}>{item.full_name}</Text>
-          <Text style={styles.description}>{item.description}</Text>
+          <Text style={styles.title}>{item.repo}</Text>
+          <Text style={styles.description}>{item.desc}</Text>
           <View style={styles.row}>
             <View style={styles.row}>
-              <Text>Author:</Text>
-              <Image
-                style={{height: 22, width: 22}}
-                source={{uri: item.owner.avatar_url}}
-              />
+              <Text>Built by:</Text>
+              {item.avatars.map((result, i, arr) => {
+                return (
+                  <Image
+                    key={i}
+                    style={{height: 22, width: 22, margin: 2}}
+                    source={{uri: arr[i]}}
+                  />
+                );
+              })}
             </View>
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text>Built by:</Text>
-              <Text>{item.stargazers_count}</Text>
+              <Text>Star:</Text>
+              <Text>{item.stars}</Text>
             </View>
             {favoriteButton}
           </View>

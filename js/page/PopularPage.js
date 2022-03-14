@@ -13,11 +13,12 @@ import {connect} from 'react-redux';
 import actions from '../actions';
 import PopularItem from '../common/PopularItem';
 import Toast from 'react-native-easy-toast';
+import NavigationBar from '../common/NavigationBar';
 
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
 const Tab = createMaterialTopTabNavigator();
-const THEME_COLOR = 'red';
+const THEME_COLOR = '#678';
 const tabNames = [{name: 'Java'}, {name: 'Android'}, {name: 'ios'}];
 
 class PopularPage extends Component {
@@ -39,9 +40,21 @@ class PopularPage extends Component {
   }, {});
 
   render() {
+    let statusBar = {
+      backgroundColor: THEME_COLOR,
+      barStyle: 'light-content',
+    };
+    let navigationBar = (
+      <NavigationBar
+        title={'最热'}
+        statusBar={statusBar}
+        style={{backgroundColor: THEME_COLOR}}
+      />
+    );
     const {mapRoute} = this;
     return (
       <View style={styles.container}>
+        {navigationBar}
         <Tab.Navigator>
           {
             // Object.keys() 方法会返回一个由一个给定对象的自身可枚举属性组成的数组

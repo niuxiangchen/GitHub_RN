@@ -19,6 +19,7 @@
     "npm": "^8.5.3",
     "react": "17.0.2",
     "react-native": "0.67.3",
+    "react-native-device-info": "^8.5.0",
     "react-native-easy-toast": "^2.0.0",
     "react-native-gesture-handler": "^2.3.0",
     "react-native-pager-view": "^5.4.11",
@@ -41,6 +42,7 @@
     "eslint": "^8.10.0",
     "jest": "^27.5.1",
     "metro-react-native-babel-preset": "^0.69.0",
+    "prop-types": "^15.8.1",
     "react-native-vector-icons": "^9.1.0",
     "react-test-renderer": "17.0.2"
   },
