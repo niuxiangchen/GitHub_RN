@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import NavigationUtil from '../navigator/NavigationUtil';
 
 class WelcomePage extends Component {
@@ -7,7 +7,7 @@ class WelcomePage extends Component {
     this.timer = setTimeout(() => {
       //  跳转到首页
       NavigationUtil.resetToHomePage(this.props);
-    }, 2000);
+    }, 200);
   }
   componentWillUnMount() {
     //  页面销毁时，清空计时器

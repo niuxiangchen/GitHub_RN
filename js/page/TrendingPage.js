@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import {
   ActivityIndicator,
+  DeviceEventEmitter,
   FlatList,
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
@@ -14,16 +16,22 @@ import actions from '../actions';
 import Toast from 'react-native-easy-toast';
 import NavigationBar from '../common/NavigationBar';
 import TrendingItem from '../common/TrendingItem';
+import TrendingDialog, {TimeSpans} from '../common/TrendingDialog';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const URL = `https://trendings.herokuapp.com/repo?lang=`;
 const Tab = createMaterialTopTabNavigator();
 const THEME_COLOR = '#678';
-const tabNames = [{name: 'java'}, {name: 'c'}, {name: 'javascript'}];
+const tabNames = [{name: 'JAVA'}, {name: 'C'}, {name: 'JavaScript'}];
+const EVENT_TYPE_TIME_SPAN_CHANGE = 'EVENT_TYPE_TIME_SPAN_CHANGE';
 
 class TrendingPage extends Component {
   constructor(props) {
     super(props);
     console.log(NavigationUtil.navigation);
+    this.state = {
+      timeSpan: TimeSpans[0],
+    };
   }
 
   //动态返回顶部tab栏
@@ -31,12 +39,56 @@ class TrendingPage extends Component {
   //这个函数返回值是 {'Java': TrendingTabPage tabLabel={'Java'} />,
   //                 Android': TrendingTabPage tabLabel={'Android'} />}
   mapRoute = tabNames.reduce((map, item) => {
-    const route = () => <TrendingTabPage tabLabel={item.name} />;
+    const route = () => (
+      <TrendingTabPage tabLabel={item.name} timeSpan={this.state.timeSpan} />
+    );
     return {
       ...map,
       [item.name]: route,
     };
   }, {});
+
+  onSelectTimeSpan(tab) {
+    this.dialog.dismiss();
+    this.setState({
+      timeSpan: tab,
+    });
+    DeviceEventEmitter.emit(EVENT_TYPE_TIME_SPAN_CHANGE, tab);
+  }
+
+  renderTitleView() {
+    return (
+      <View>
+        <TouchableOpacity
+          underlayColor="transparent"
+          onPress={() => this.dialog.show()}>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text
+              style={{
+                fontSize: 18,
+                color: '#FFFFFF',
+                fontWeight: '400',
+              }}>
+              趋势 {this.state.timeSpan.showText}
+            </Text>
+            <MaterialIcons
+              name={'arrow-drop-down'}
+              size={22}
+              style={{color: 'white'}}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+  renderTrendingDialog() {
+    return (
+      <TrendingDialog
+        ref={dialog => (this.dialog = dialog)}
+        onSelect={tab => this.onSelectTimeSpan(tab)}
+      />
+    );
+  }
 
   render() {
     let statusBar = {
@@ -45,7 +97,7 @@ class TrendingPage extends Component {
     };
     let navigationBar = (
       <NavigationBar
-        title={'趋势'}
+        titleView={this.renderTitleView()}
         statusBar={statusBar}
         style={{backgroundColor: THEME_COLOR}}
       />
@@ -53,6 +105,7 @@ class TrendingPage extends Component {
     const {mapRoute} = this;
     return (
       <View style={styles.container}>
+        <TrendingDialog />
         {navigationBar}
         <Tab.Navigator>
           {
@@ -63,6 +116,7 @@ class TrendingPage extends Component {
             ))
           }
         </Tab.Navigator>
+        {this.renderTrendingDialog()}
       </View>
     );
   }
@@ -73,11 +127,25 @@ const pageSize = 10; //设为常量 防止修改
 class TrendingTab extends Component<Props> {
   constructor(props) {
     super(props);
-    const {tabLabel} = this.props;
+    const {tabLabel, timeSpan} = this.props;
     this.storeName = tabLabel;
+    this.timeSpan = timeSpan;
   }
   componentDidMount() {
     this.loadData();
+    this.timeSpanChangeListener = DeviceEventEmitter.addListener(
+      EVENT_TYPE_TIME_SPAN_CHANGE,
+      timeSpan => {
+        this.timeSpan = timeSpan;
+        this.loadData();
+      },
+    );
+  }
+
+  componentWillUnMount() {
+    if (this.timeSpanChangeListener) {
+      this.timeSpanChangeListener.remove();
+    }
   }
 
   //加载数据
@@ -120,7 +188,7 @@ class TrendingTab extends Component<Props> {
 
   //返回加工后的url
   genFetchUrl(key) {
-    return URL + key + `&since=daily`;
+    return `${URL}${key}&since=${this.timeSpan.searchText}`;
   }
 
   renderItem(data) {

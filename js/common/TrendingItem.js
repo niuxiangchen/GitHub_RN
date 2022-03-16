@@ -11,11 +11,13 @@ export default class TrendingItem extends Component {
         <FontAwesome name={'star-o'} size={26} style={{color: 'red'}} />
       </TouchableOpacity>
     );
+    let description = `<!--<p style="color: Purple; font-size: 2rem;">${item.desc}</p>-->`;
     return (
       <TouchableOpacity onPress={() => this.props.onSelect}>
         <View style={styles.cell_container}>
           <Text style={styles.title}>{item.repo}</Text>
           <Text style={styles.description}>{item.desc}</Text>
+          {/*<RenderHtml contentWidth={width} source={description} />*/}
           <View style={styles.row}>
             <View style={styles.row}>
               <Text>Built by:</Text>
