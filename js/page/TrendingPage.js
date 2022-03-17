@@ -18,12 +18,16 @@ import NavigationBar from '../common/NavigationBar';
 import TrendingItem from '../common/TrendingItem';
 import TrendingDialog, {TimeSpans} from '../common/TrendingDialog';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {FLAG_STORAGE} from '../expand/dao/DataStore';
+import FavoriteDao from '../expand/dao/FavoriteDao';
+import FavoriteUtil from '../util/FavoriteUtil';
 
 const URL = `https://trendings.herokuapp.com/repo?lang=`;
 const Tab = createMaterialTopTabNavigator();
 const THEME_COLOR = '#678';
 const tabNames = [{name: 'JAVA'}, {name: 'C'}, {name: 'JavaScript'}];
 const EVENT_TYPE_TIME_SPAN_CHANGE = 'EVENT_TYPE_TIME_SPAN_CHANGE';
+const favoriteDao = new FavoriteDao(FLAG_STORAGE.flag_trending);
 
 class TrendingPage extends Component {
   constructor(props) {
@@ -160,6 +164,7 @@ class TrendingTab extends Component<Props> {
         ++store.pageIndex,
         pageSize,
         store.items,
+        favoriteDao,
         callback => {
           this.refs.toast.show('没有更多了');
         },
@@ -195,15 +200,25 @@ class TrendingTab extends Component<Props> {
     const item = data.item;
     return (
       <TrendingItem
-        item={item}
-        onSelect={() => {
+        projectModel={item}
+        onSelect={callback => {
           NavigationUtil.goPage(
             {
               projectModel: item,
+              flag: FLAG_STORAGE.flag_trending,
+              callback,
             },
             'DetailPage',
           );
         }}
+        onFavorite={(item, isFavorite) =>
+          FavoriteUtil.onFavorite(
+            favoriteDao,
+            item,
+            isFavorite,
+            FLAG_STORAGE.flag_trending,
+          )
+        }
       />
     );
   }
@@ -262,17 +277,25 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   //刷新
-  onRefreshTrending: (storeName, url, pageSize) =>
+  onRefreshTrending: (storeName, url, pageSize, favoriteDao) =>
     dispatch(actions.onRefreshTrending(storeName, url, pageSize)),
 
   //加载更多
-  onLoadMoreTrending: (storeName, pageIndex, pageSize, items, callBack) =>
+  onLoadMoreTrending: (
+    storeName,
+    pageIndex,
+    pageSize,
+    items,
+    favoriteDao,
+    callBack,
+  ) =>
     dispatch(
       actions.onLoadMoreTrending(
         storeName,
         pageIndex,
         pageSize,
         items,
+        favoriteDao,
         callBack,
       ),
     ),

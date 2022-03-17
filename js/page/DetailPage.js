@@ -5,6 +5,7 @@ import ViewUtil from '../util/ViewUtil';
 import {WebView} from 'react-native-webview';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import NavigationUtil from '../navigator/NavigationUtil';
+import FavoriteDao from '../expand/dao/FavoriteDao';
 
 const TRENDING_URL = 'https://github.com/';
 type Props = {};
@@ -14,28 +15,51 @@ export default class DetailPage extends Component<Props> {
   constructor(props) {
     super(props);
     this.params = this.props.route.params;
-    const {projectModel} = this.params;
+    const {projectModel, flag} = this.params;
+    this.favoriteDao = new FavoriteDao(flag);
     console.log(this.props, 'this.props');
     console.log(this.params, 'params');
     console.log(projectModel, 'projectModel');
     let title;
-    if (projectModel.repo || projectModel.repo_link) {
-      this.url = projectModel.repo_link || TRENDING_URL + projectModel.repo;
-      title = projectModel.repo;
+    if (projectModel.item.repo || projectModel.item.repo_link) {
+      this.url =
+        projectModel.item.repo_link || TRENDING_URL + projectModel.item.repo;
+      title = projectModel.item.repo;
     } else {
-      this.url = projectModel.html_url || TRENDING_URL + projectModel.full_name;
-      title = projectModel.full_name;
+      this.url =
+        projectModel.item.html_url ||
+        TRENDING_URL + projectModel.item.full_name;
+      title = projectModel.item.full_name;
     }
     this.state = {
       title: title,
       url: this.url,
       canGoBack: false,
+      isFavorite: projectModel.isFavorite,
     };
   }
+
+  onFavoriteButtonClick() {
+    const {projectModel, callback} = this.params;
+    const isFavorite = (projectModel.isFavorite = !projectModel.isFavorite);
+    callback(isFavorite); //更新Item的收藏状态
+    this.setState({
+      isFavorite: isFavorite,
+    });
+    let key = projectModel.item.fullName
+      ? projectModel.item.fullName
+      : projectModel.item.id.toString();
+    if (projectModel.isFavorite) {
+      this.favoriteDao.saveFavoriteItem(key, JSON.stringify(projectModel.item));
+    } else {
+      this.favoriteDao.removeFavoriteItem(key);
+    }
+  }
+
   renderRightButton() {
     return (
       <View style={{flexDirection: 'row'}}>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => this.onFavoriteButtonClick()}>
           <FontAwesome
             name={this.state.isFavorite ? 'star' : 'star-o'}
             size={20}

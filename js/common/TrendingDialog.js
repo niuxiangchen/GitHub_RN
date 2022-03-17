@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import TimeSpan from '../mo/TimeSpan';
+import TimeSpan from '../model/TimeSpan';
 
 export const TimeSpans = [
   new TimeSpan('今 天', 'since=daily'),
