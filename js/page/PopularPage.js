@@ -130,7 +130,12 @@ class PopularTab extends Component<Props> {
       <PopularItem
         item={item}
         onSelect={() => {
-          this.refs.toast.show('没有更多了');
+          NavigationUtil.goPage(
+            {
+              projectModel: item,
+            },
+            'DetailPage',
+          );
         }}
       />
     );

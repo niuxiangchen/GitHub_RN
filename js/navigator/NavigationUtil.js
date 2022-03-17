@@ -13,6 +13,15 @@ class NavigationUtil extends Component {
       ...params,
     });
   }
+
+  /**
+   * 返回上一页
+   * @param navigation
+   */
+  static goBack(navigation) {
+    navigation.goBack();
+  }
+
   /**
    * 重置到首页
    * @param params

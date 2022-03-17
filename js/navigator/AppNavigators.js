@@ -1,7 +1,6 @@
 // In App.js in a new project
 
 import * as React from 'react';
-import {View, Text} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomePage from '../page/HomePage';
@@ -10,6 +9,7 @@ import MyPage from '../page/MyPage';
 import PopularPage from '../page/PopularPage';
 import TrendingPage from '../page/TrendingPage';
 import WelcomePage from '../page/WelcomePage';
+import DetailPage from '../page/DetailPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +26,7 @@ function AppNavigators() {
         <Stack.Screen name="MyPage" component={MyPage} />
         <Stack.Screen name="PopularPage" component={PopularPage} />
         <Stack.Screen name="TrendingPage" component={TrendingPage} />
+        <Stack.Screen name="DetailPage" component={DetailPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -13,7 +13,7 @@ export default class TrendingItem extends Component {
     );
     let description = `<!--<p style="color: Purple; font-size: 2rem;">${item.desc}</p>-->`;
     return (
-      <TouchableOpacity onPress={() => this.props.onSelect}>
+      <TouchableOpacity onPress={() => this.props.onSelect()}>
         <View style={styles.cell_container}>
           <Text style={styles.title}>{item.repo}</Text>
           <Text style={styles.description}>{item.desc}</Text>

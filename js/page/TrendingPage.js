@@ -197,7 +197,12 @@ class TrendingTab extends Component<Props> {
       <TrendingItem
         item={item}
         onSelect={() => {
-          this.refs.toast.show('没有更多了');
+          NavigationUtil.goPage(
+            {
+              projectModel: item,
+            },
+            'DetailPage',
+          );
         }}
       />
     );
