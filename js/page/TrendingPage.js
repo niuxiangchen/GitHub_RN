@@ -85,6 +85,7 @@ class TrendingPage extends Component {
       </View>
     );
   }
+
   renderTrendingDialog() {
     return (
       <TrendingDialog

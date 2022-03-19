@@ -1,5 +1,4 @@
 import Types from '../types';
-import {handleData} from '../ActionUtil';
 import FavoriteDao from '../../expand/dao/FavoriteDao';
 import ProjectModel from '../../model/ProjectModel';
 
