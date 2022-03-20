@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const FAVORITE_KEY_PREFIX = 'favorite_';
 export default class FavoriteDao {
   constructor(flag) {
-    this.favoriteKey = FAVORITE_KEY_PREFIX + flag;
+    this.favoriteKey = FAVORITE_KEY_PREFIX + flag; //传过来的值标识着这是趋势模块的还是最热模块的
   }
   /**
    * 收藏项目,保存收藏的项目
@@ -29,7 +29,7 @@ export default class FavoriteDao {
       if (!error) {
         let favoriteKeys = [];
         if (result) {
-          favoriteKeys = JSON.parse(result);
+          favoriteKeys = JSON.parse(result); //转换为js对象
         }
         let index = favoriteKeys.indexOf(key);
         if (isAdd) {
@@ -74,7 +74,7 @@ export default class FavoriteDao {
     });
   }
   /**
-   * 获取所以收藏的项目
+   * 获取所有收藏的项目
    * @return {Promise}
    */
   getAllItems() {

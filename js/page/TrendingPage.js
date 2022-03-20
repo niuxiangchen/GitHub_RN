@@ -171,7 +171,7 @@ class TrendingTab extends Component<Props> {
         },
       );
     } else {
-      onRefreshTrending(this.storeName, url, pageSize);
+      onRefreshTrending(this.storeName, url, pageSize, favoriteDao);
     }
   }
 
@@ -199,6 +199,7 @@ class TrendingTab extends Component<Props> {
 
   renderItem(data) {
     const item = data.item;
+    console.log(item, 'renderItem');
     return (
       <TrendingItem
         projectModel={item}
@@ -212,14 +213,14 @@ class TrendingTab extends Component<Props> {
             'DetailPage',
           );
         }}
-        onFavorite={(item, isFavorite) =>
+        onFavorite={(item, isFavorite) => {
           FavoriteUtil.onFavorite(
             favoriteDao,
             item,
             isFavorite,
             FLAG_STORAGE.flag_trending,
-          )
-        }
+          );
+        }}
       />
     );
   }
@@ -279,7 +280,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
   //刷新
   onRefreshTrending: (storeName, url, pageSize, favoriteDao) =>
-    dispatch(actions.onRefreshTrending(storeName, url, pageSize)),
+    dispatch(actions.onRefreshTrending(storeName, url, pageSize, favoriteDao)),
 
   //加载更多
   onLoadMoreTrending: (

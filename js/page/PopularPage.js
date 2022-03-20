@@ -80,6 +80,7 @@ class PopularTab extends Component<Props> {
     super(props);
     const {tabLabel} = this.props;
     this.storeName = tabLabel;
+    this.isFavoriteChanged = false;
   }
   componentDidMount() {
     this.loadData();
@@ -214,14 +215,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(actions.onRefreshPopular(storeName, url, pageSize, favoriteDao)),
 
   //加载更多
-  onLoadMorePopular: (
-    storeName,
-    pageIndex,
-    pageSize,
-    items,
-    callBack,
-    favoriteDao,
-  ) =>
+  onLoadMorePopular: (storeName, pageIndex, pageSize, items, callBack) =>
     dispatch(
       actions.onLoadMorePopular(
         storeName,

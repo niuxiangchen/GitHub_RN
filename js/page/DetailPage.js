@@ -46,9 +46,14 @@ export default class DetailPage extends Component<Props> {
     this.setState({
       isFavorite: isFavorite,
     });
-    let key = projectModel.item.fullName
-      ? projectModel.item.fullName
-      : projectModel.item.id.toString();
+    let key;
+    if (projectModel.item.repo || projectModel.item.repo_link) {
+      key = projectModel.item.repo;
+    } else {
+      key = projectModel.item.fullName
+        ? projectModel.item.fullName
+        : projectModel.item.id.toString();
+    }
     if (projectModel.isFavorite) {
       this.favoriteDao.saveFavoriteItem(key, JSON.stringify(projectModel.item));
     } else {

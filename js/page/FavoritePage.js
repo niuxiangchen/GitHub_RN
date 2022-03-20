@@ -14,7 +14,10 @@ import TrendingItem from '../common/TrendingItem';
 
 const Tab = createMaterialTopTabNavigator();
 const THEME_COLOR = '#678';
-const tabNames = [{name: '最热'}, {name: '趋势'}];
+const tabNames = [
+  {name: '最热', flag: FLAG_STORAGE.flag_popular},
+  {name: '趋势', flag: FLAG_STORAGE.flag_trending},
+];
 
 class FavoritePage extends Component {
   constructor(props) {
@@ -27,7 +30,9 @@ class FavoritePage extends Component {
   //这个函数返回值是 {'Java': FavoriteTabPage tabLabel={'Java'} />,
   //                 Android': FavoriteTabPage tabLabel={'Android'} />}
   mapRoute = tabNames.reduce((map, item) => {
-    const route = () => <FavoriteTabPage tabLabel={item.name} />;
+    const route = () => (
+      <FavoriteTabPage tabLabel={item.name} flag={item.flag} />
+    );
     return {
       ...map,
       [item.name]: route,
@@ -64,17 +69,17 @@ class FavoritePage extends Component {
   }
 }
 
-const pageSize = 10; //设为常量 防止修改
-
 class FavoriteTab extends Component<Props> {
   constructor(props) {
     super(props);
     const {flag} = this.props;
     this.storeName = flag;
     this.favoriteDao = new FavoriteDao(flag);
+    console.log(this.props, 'this.props');
+    console.log(flag, 'flag');
   }
   componentDidMount() {
-    this.loadData();
+    this.loadData(true);
   }
 
   //加载数据
@@ -111,18 +116,15 @@ class FavoriteTab extends Component<Props> {
   }
 
   renderItem(data) {
-    const {theme} = this.props;
     const item = data.item;
     const Item =
       this.storeName === FLAG_STORAGE.flag_popular ? PopularItem : TrendingItem;
     return (
       <Item
-        theme={theme}
         projectModel={item}
         onSelect={callback => {
           NavigationUtil.goPage(
             {
-              theme,
               projectModel: item,
               flag: this.storeName,
               callback,
@@ -142,14 +144,14 @@ class FavoriteTab extends Component<Props> {
         <FlatList
           data={store.projectModels}
           renderItem={data => this.renderItem(data)}
-          keyExtractor={item => '' + item.item.id}
+          keyExtractor={item => '' + (item.item.id || item.item.fullName)}
           refreshControl={
             <RefreshControl
               title={'Loading...'}
               titleColor={THEME_COLOR}
               colors={[THEME_COLOR]}
               refreshing={store.isLoading}
-              onRefresh={() => this.loadData()}
+              onRefresh={() => this.loadData(true)}
               tintColor={THEME_COLOR}
             />
           }

@@ -26,6 +26,7 @@ export function onRefreshPopular(storeName, url, pageSize, favoriteDao) {
           storeName,
           data,
           pageSize,
+          favoriteDao,
         );
       })
       .catch(error => {

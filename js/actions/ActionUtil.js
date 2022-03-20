@@ -8,6 +8,7 @@ export default function handleData(
   data,
   pageSize,
   favoriteDao,
+  params,
 ) {
   let fixItems = [];
   if (data && data.data) {
@@ -26,6 +27,7 @@ export default function handleData(
       projectModels: projectModels,
       storeName,
       pageIndex: 1,
+      ...params,
     });
   });
 }
@@ -43,6 +45,7 @@ export async function _projectModels(showItems, favoriteDao, callback) {
   try {
     //获取收藏的key
     keys = await favoriteDao.getFavoriteKeys();
+    console.log(keys, 'keys');
   } catch (e) {
     console.log(e);
   }
