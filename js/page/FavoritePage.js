@@ -11,6 +11,8 @@ import FavoriteDao from '../expand/dao/FavoriteDao';
 import FavoriteUtil from '../util/FavoriteUtil';
 import PopularItem from '../common/PopularItem';
 import TrendingItem from '../common/TrendingItem';
+import EventTypes from '../util/EventTypes';
+import EventBus from 'react-native-event-bus';
 
 const Tab = createMaterialTopTabNavigator();
 const THEME_COLOR = '#678';
@@ -78,8 +80,22 @@ class FavoriteTab extends Component<Props> {
     console.log(this.props, 'this.props');
     console.log(flag, 'flag');
   }
+
   componentDidMount() {
     this.loadData(true);
+    EventBus.getInstance().addListener(
+      EventTypes.bottom_tab_select,
+      (this.listener = data => {
+        //收藏tab位于第3个位置
+        if (data.to === 2) {
+          this.loadData(false);
+        }
+      }),
+    );
+  }
+
+  componentWillUnMount() {
+    EventBus.getInstance().removeListener(this.listener);
   }
 
   //加载数据
@@ -113,6 +129,11 @@ class FavoriteTab extends Component<Props> {
       isFavorite,
       this.props.flag,
     );
+    if (this.storeName === FLAG_STORAGE.flag_popular) {
+      EventBus.getInstance().fireEvent(EventTypes.favorite_changed_popular);
+    } else {
+      EventBus.getInstance().fireEvent(EventTypes.favoriteChanged_trending);
+    }
   }
 
   renderItem(data) {

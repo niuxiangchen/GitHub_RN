@@ -10,6 +10,7 @@ import PopularPage from '../page/PopularPage';
 import TrendingPage from '../page/TrendingPage';
 import WelcomePage from '../page/WelcomePage';
 import DetailPage from '../page/DetailPage';
+import WebViewPage from '../page/WebViewPage';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ function AppNavigators() {
         <Stack.Screen name="PopularPage" component={PopularPage} />
         <Stack.Screen name="TrendingPage" component={TrendingPage} />
         <Stack.Screen name="DetailPage" component={DetailPage} />
+        <Stack.Screen name="WebViewPage" component={WebViewPage} />
       </Stack.Navigator>
     </NavigationContainer>
   );

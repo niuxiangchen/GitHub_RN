@@ -21,6 +21,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {FLAG_STORAGE} from '../expand/dao/DataStore';
 import FavoriteDao from '../expand/dao/FavoriteDao';
 import FavoriteUtil from '../util/FavoriteUtil';
+import EventBus from 'react-native-event-bus';
+import EventTypes from '../util/EventTypes';
 
 const URL = `https://trendings.herokuapp.com/repo?lang=`;
 const Tab = createMaterialTopTabNavigator();
@@ -136,6 +138,7 @@ class TrendingTab extends Component<Props> {
     this.storeName = tabLabel;
     this.timeSpan = timeSpan;
   }
+
   componentDidMount() {
     this.loadData();
     this.timeSpanChangeListener = DeviceEventEmitter.addListener(
@@ -145,18 +148,34 @@ class TrendingTab extends Component<Props> {
         this.loadData();
       },
     );
+    EventBus.getInstance().addListener(
+      EventTypes.favoriteChanged_trending,
+      (this.favoriteChangeListener = () => {
+        this.isFavoriteChanged = true;
+      }),
+    );
+    EventBus.getInstance().addListener(
+      EventTypes.bottom_tab_select,
+      (this.bottomTabSelectListener = data => {
+        if (data.to === 1 && this.isFavoriteChanged) {
+          this.loadData(null, true);
+        }
+      }),
+    );
   }
 
-  componentWillUnMount() {
+  componentWillUnmount() {
     if (this.timeSpanChangeListener) {
       this.timeSpanChangeListener.remove();
     }
+    EventBus.getInstance().removeListener(this.favoriteChangeListener);
+    EventBus.getInstance().removeListener(this.bottomTabSelectListener);
   }
 
   //加载数据
-  loadData(loadMore) {
-    //从redux中获取这两个方法
-    const {onRefreshTrending, onLoadMoreTrending} = this.props;
+  loadData(loadMore, refreshFavorite) {
+    const {onRefreshTrending, onLoadMoreTrending, onFlushTrendingFavorite} =
+      this.props;
     const store = this._store();
     const url = this.genFetchUrl(this.storeName);
     if (loadMore) {
@@ -170,11 +189,19 @@ class TrendingTab extends Component<Props> {
           this.refs.toast.show('没有更多了');
         },
       );
+    } else if (refreshFavorite) {
+      onFlushTrendingFavorite(
+        this.storeName,
+        store.pageIndex,
+        pageSize,
+        store.items,
+        favoriteDao,
+      );
+      this.isFavoriteChanged = false;
     } else {
       onRefreshTrending(this.storeName, url, pageSize, favoriteDao);
     }
   }
-
   //返回state里保存的trending state对象
   _store() {
     //获取state容器里的
@@ -299,6 +326,22 @@ const mapDispatchToProps = dispatch => ({
         items,
         favoriteDao,
         callBack,
+      ),
+    ),
+  onFlushTrendingFavorite: (
+    storeName,
+    pageIndex,
+    pageSize,
+    items,
+    favoriteDao,
+  ) =>
+    dispatch(
+      actions.onFlushTrendingFavorite(
+        storeName,
+        pageIndex,
+        pageSize,
+        items,
+        favoriteDao,
       ),
     ),
 });

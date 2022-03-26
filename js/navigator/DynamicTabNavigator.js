@@ -8,6 +8,8 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import {connect} from 'react-redux';
+import EventBus from 'react-native-event-bus';
+import EventTypes from '../util/EventTypes';
 
 const Tab = createBottomTabNavigator();
 
@@ -75,6 +77,13 @@ function DynamicTabNavigator(props) {
           name={_PopularPage.name}
           component={PopularPage}
           options={_PopularPage.options}
+          onNavigationStateChange={(prevState, newState, action) => {
+            EventBus.getInstance().fireEvent(EventTypes.bottom_tab_select, {
+              //发送底部tab切换事件
+              from: prevState.index,
+              to: newState.index,
+            });
+          }}
         />
         <Tab.Screen
           name="TrendingPage"
