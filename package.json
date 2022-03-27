@@ -47,6 +47,7 @@
     "metro-react-native-babel-preset": "^0.69.0",
     "prop-types": "^15.8.1",
     "react-native-event-bus": "^1.0.0",
+    "react-native-parallax-scroll-view": "^0.21.3",
     "react-native-vector-icons": "^9.1.0",
     "react-native-webview": "^11.17.2",
     "react-test-renderer": "17.0.2"
