@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {StyleSheet, View} from 'react-native';
 import NavigationBar from '../common/NavigationBar';
-import ViewUtil from '../util/ViewUtil';
+import ViewUtil from '../util/ViewUtils';
 import {WebView} from 'react-native-webview';
 import NavigationUtil from '../navigator/NavigationUtil';
 

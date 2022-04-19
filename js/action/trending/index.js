@@ -1,6 +1,6 @@
 import Types from '../types';
 import DataStore, {FLAG_STORAGE} from '../../expand/dao/DataStore';
-import handleData, {_projectModels} from '../ActionUtil';
+import {_projectModels, handleData} from '../ActionUtil';
 
 /**
  * 获取最热数据的异步action
@@ -36,6 +36,7 @@ export function onRefreshTrending(storeName, url, pageSize, favoriteDao) {
       });
   };
 }
+
 /**
  * 加载更多
  * @param storeName
@@ -85,5 +86,38 @@ export function onLoadMoreTrending(
         });
       }
     }, 500);
+  };
+}
+
+/**
+ * 刷新收藏状态
+ * @param storeName
+ * @param pageIndex 第几页
+ * @param pageSize 每页展示条数
+ * @param dataArray 原始数据
+ * @param favoriteDao
+ * @returns {function(*)}
+ */
+export function onFlushTrendingFavorite(
+  storeName,
+  pageIndex,
+  pageSize,
+  dataArray = [],
+  favoriteDao,
+) {
+  return dispatch => {
+    //本次和载入的最大数量
+    let max =
+      pageSize * pageIndex > dataArray.length
+        ? dataArray.length
+        : pageSize * pageIndex;
+    _projectModels(dataArray.slice(0, max), favoriteDao, data => {
+      dispatch({
+        type: Types.TRENDING_FLUSH_FAVORITE,
+        storeName,
+        pageIndex,
+        projectModels: data,
+      });
+    });
   };
 }

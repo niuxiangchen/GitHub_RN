@@ -1,4 +1,4 @@
-import Types from '../../actions/types';
+import Types from '../../action/types';
 
 const defaultState = {};
 /**

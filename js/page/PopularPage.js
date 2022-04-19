@@ -10,15 +10,13 @@ import {
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import NavigationUtil from '../navigator/NavigationUtil';
 import {connect} from 'react-redux';
-import actions from '../actions';
+import actions from '../action';
 import PopularItem from '../common/PopularItem';
 import Toast from 'react-native-easy-toast';
 import NavigationBar from '../common/NavigationBar';
 import {FLAG_STORAGE} from '../expand/dao/DataStore';
 import FavoriteDao from '../expand/dao/FavoriteDao';
 import FavoriteUtil from '../util/FavoriteUtil';
-import EventBus from 'react-native-event-bus';
-import EventTypes from '../util/EventTypes';
 
 const URL = 'https://api.github.com/search/repositories?q=';
 const QUERY_STR = '&sort=stars';
@@ -87,25 +85,6 @@ class PopularTab extends Component<Props> {
 
   componentDidMount() {
     this.loadData();
-    EventBus.getInstance().addListener(
-      EventTypes.favorite_changed_popular,
-      (this.favoriteChangeListener = () => {
-        this.isFavoriteChanged = true;
-      }),
-    );
-    EventBus.getInstance().addListener(
-      EventTypes.bottom_tab_select,
-      (this.bottomTabSelectListener = data => {
-        if (data.to === 0 && this.isFavoriteChanged) {
-          this.loadData(null, true);
-        }
-      }),
-    );
-  }
-
-  componentWillUnmount() {
-    EventBus.getInstance().removeListener(this.favoriteChangeListener);
-    EventBus.getInstance().removeListener(this.bottomTabSelectListener);
   }
 
   //加载数据
@@ -114,6 +93,7 @@ class PopularTab extends Component<Props> {
     const {onRefreshPopular, onLoadMorePopular, onFlushPopularFavorite} =
       this.props;
     const store = this._store();
+    console.log('store', store);
     const url = this.genFetchUrl(this.storeName);
     if (loadMore) {
       onLoadMorePopular(
@@ -141,11 +121,9 @@ class PopularTab extends Component<Props> {
 
   //返回state里保存的popular state对象
   _store() {
-    //获取state容器里的
     const {popular} = this.props;
     let store = popular[this.storeName];
     if (!store) {
-      //默认值
       store = {
         items: [],
         isLoading: false,
@@ -200,6 +178,7 @@ class PopularTab extends Component<Props> {
 
   render() {
     let store = this._store();
+    console.log(store.projectModels, '存储的数据');
     return (
       <View style={styles.container}>
         <FlatList

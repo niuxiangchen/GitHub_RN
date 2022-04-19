@@ -3,13 +3,9 @@ import PopularPage from '../page/PopularPage';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import TrendingPage from '../page/TrendingPage';
 import FavoritePage from '../page/FavoritePage';
-import MyPage from '../page/MyPage';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
-import {connect} from 'react-redux';
-import EventBus from 'react-native-event-bus';
-import EventTypes from '../util/EventTypes';
 
 const Tab = createBottomTabNavigator();
 
@@ -44,20 +40,11 @@ const TABS = {
       ),
     },
   },
-  _MyPage: {
-    name: 'MyPage',
-    component: {MyPage},
-    options: {
-      tabBarLabel: '我的',
-      tabBarIcon: ({color, size}) => (
-        <MaterialIcons name={'person'} size={26} />
-      ),
-    },
-  },
 };
 
+//动态底部栏
 function DynamicTabNavigator(props) {
-  const {_PopularPage, _TrendingPage, _FavoritePage, _MyPage} = TABS;
+  const {_PopularPage, _TrendingPage, _FavoritePage} = TABS;
   console.log(props);
   return (
     <NavigationContainer
@@ -77,13 +64,7 @@ function DynamicTabNavigator(props) {
           name={_PopularPage.name}
           component={PopularPage}
           options={_PopularPage.options}
-          onNavigationStateChange={(prevState, newState, action) => {
-            EventBus.getInstance().fireEvent(EventTypes.bottom_tab_select, {
-              //发送底部tab切换事件
-              from: prevState.index,
-              to: newState.index,
-            });
-          }}
+          onNavigationStateChange={(prevState, newState, action) => {}}
         />
         <Tab.Screen
           name="TrendingPage"
@@ -95,18 +76,9 @@ function DynamicTabNavigator(props) {
           component={FavoritePage}
           options={_FavoritePage.options}
         />
-        <Tab.Screen
-          name="MyPage"
-          component={MyPage}
-          options={_MyPage.options}
-        />
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
 
-const mapStateToProps = state => ({
-  theme: state.theme.theme,
-});
-
-export default connect(mapStateToProps)(DynamicTabNavigator);
+export default DynamicTabNavigator;

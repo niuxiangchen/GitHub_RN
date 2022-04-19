@@ -12,7 +12,7 @@ import {
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import NavigationUtil from '../navigator/NavigationUtil';
 import {connect} from 'react-redux';
-import actions from '../actions';
+import actions from '../action';
 import Toast from 'react-native-easy-toast';
 import NavigationBar from '../common/NavigationBar';
 import TrendingItem from '../common/TrendingItem';
@@ -21,8 +21,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {FLAG_STORAGE} from '../expand/dao/DataStore';
 import FavoriteDao from '../expand/dao/FavoriteDao';
 import FavoriteUtil from '../util/FavoriteUtil';
-import EventBus from 'react-native-event-bus';
-import EventTypes from '../util/EventTypes';
 
 const URL = `https://trendings.herokuapp.com/repo?lang=`;
 const Tab = createMaterialTopTabNavigator();
@@ -148,28 +146,12 @@ class TrendingTab extends Component<Props> {
         this.loadData();
       },
     );
-    EventBus.getInstance().addListener(
-      EventTypes.favoriteChanged_trending,
-      (this.favoriteChangeListener = () => {
-        this.isFavoriteChanged = true;
-      }),
-    );
-    EventBus.getInstance().addListener(
-      EventTypes.bottom_tab_select,
-      (this.bottomTabSelectListener = data => {
-        if (data.to === 1 && this.isFavoriteChanged) {
-          this.loadData(null, true);
-        }
-      }),
-    );
   }
 
   componentWillUnmount() {
     if (this.timeSpanChangeListener) {
       this.timeSpanChangeListener.remove();
     }
-    EventBus.getInstance().removeListener(this.favoriteChangeListener);
-    EventBus.getInstance().removeListener(this.bottomTabSelectListener);
   }
 
   //加载数据
@@ -264,6 +246,8 @@ class TrendingTab extends Component<Props> {
 
   render() {
     let store = this._store();
+    console.log(store.projectModels, '存储的数据');
+
     return (
       <View style={styles.container}>
         <FlatList
